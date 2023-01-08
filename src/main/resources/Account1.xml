@@ -1,0 +1,16 @@
+
+
+<Account> 
+	<accountId>123456</accountId>
+	<firstName>Test1</firstName>
+	<middleInitial>f</middleInitial>
+	<lastName>TestLastName</lastName>
+	<address>
+		<street>15263 bleh street</street>
+		<city>Baltimore</city>
+		<zip>12346</zip>
+	</address>
+	<job>Job 1</job>
+	<balance>30.00</balance>
+</Account> 
+
