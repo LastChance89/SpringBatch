@@ -24,6 +24,7 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
 
 import main.com.java.dao.PrepairedStatementSetter;
 import main.com.java.model.Account;
+import main.com.java.writer.AccountWriter;
 
 @Configuration
 @EnableBatchProcessing
@@ -33,11 +34,11 @@ public class BatchConfiguration {
 	
 	private final StepBuilderFactory stepBuilderFactory;
 	
-	private final String query = "INSERT INTO ACCOUNT VALUES (?,?,?,?,?,?)";
+
 	
-	@Autowired
-	private DataSource dataSource;
-	
+	@Autowired 
+	AccountWriter accountWriter;
+
 	@Value("classpath*:/Account1.xml")
 	public Resource[] inputFiles;
 	
@@ -59,8 +60,6 @@ public class BatchConfiguration {
 		StaxEventItemReader <Account> accountReader = new StaxEventItemReader<Account>();
 		Map<String, String> map = new HashMap<>();
 		//https://stackoverflow.com/questions/49450397/vulnerability-warning-with-xstreammarshaller
-		//Map<Class<?>, String> map2 = new HashMap<Class<?>, String>();
-		//map2.put(Account.class, "account");
 		map.put("Account", "main.com.java.model.Account");
 
 		XStreamMarshaller  marshaller = new XStreamMarshaller();
@@ -72,7 +71,6 @@ public class BatchConfiguration {
 		 properly have the xStream work with latest version
 		*/
 		marshaller.getXStream().processAnnotations(Account.class);
-		//marshaller.setImplicitCollections(map2);
 		marshaller.setAliases(map);
 		accountReader.setFragmentRootElementName("Account");
 		accountReader.setUnmarshaller(marshaller);
@@ -88,21 +86,26 @@ public class BatchConfiguration {
 		
 	}
 	
+	//Reader and processor and we remove the writer. 
+	//we are then goign to create 2 tasklets, those tasklets will either update or 
+	
+	
 	@Bean
 	public Step fileStep() {
 		return this.stepBuilderFactory.get("fileStep").<Account,Account>chunk(5).reader(multiResourceItemReader())
-			.writer(accountWriter()).build();
+			.writer(accountWriter).build();
 	}
 	
+	/*
 	@Bean 
 	public ItemWriter<Account> accountWriter(){
 		JdbcBatchItemWriter<Account> accountItemWriter = new JdbcBatchItemWriter<Account>();
 		accountItemWriter.setDataSource(dataSource);
-		accountItemWriter.setSql(query);
+		accountItemWriter.setSql(insertQuery);
 		accountItemWriter.setItemPreparedStatementSetter(new PrepairedStatementSetter());
 		return accountItemWriter;
 	}
-	
+	*/
 	
 	
 	
