@@ -34,12 +34,10 @@ public class BatchConfiguration {
 	
 	private final StepBuilderFactory stepBuilderFactory;
 	
-
-	
 	@Autowired 
 	AccountWriter accountWriter;
 
-	@Value("classpath*:/Account1.xml")
+	@Value("file:${resource.locations}")
 	public Resource[] inputFiles;
 	
 	public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory) {
@@ -85,11 +83,7 @@ public class BatchConfiguration {
 		
 		
 	}
-	
-	//Reader and processor and we remove the writer. 
-	//we are then goign to create 2 tasklets, those tasklets will either update or 
-	
-	
+		
 	@Bean
 	public Step fileStep() {
 		return this.stepBuilderFactory.get("fileStep").<Account,Account>chunk(5).reader(multiResourceItemReader())
